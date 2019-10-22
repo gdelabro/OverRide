@@ -1,0 +1,4 @@
+Pour ce level, lorsqu'on lis le code en c, on remarque tres rapidement que seul
+21 valeurs peuvent etre traitee par le programme qui peut nous donner un shell.
+Il suffit donc de toutes les tester pour obtenir notre shell.
+La bon mot de passe est 322424827
