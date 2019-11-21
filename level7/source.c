@@ -21,8 +21,8 @@ int store_number(int *addr) {
 	edx = (ecx * 0xaaaaaaab) >> 32;
 	edx >>= 1;
 	eax = edx * 3;
-	edx = ecx;
-	eax -= edx;
+	edx = index;
+	edx -= eax;
 	if ((index != ((index * 0xaaaaaaab) >> 0x1)*3)
 		&& (nb >> 0x18 != 0xb7))
 	{
@@ -45,3 +45,6 @@ int read_number(unsigned int *addr) {
 }
 
 //on peut tenter decrire numero par numero du shellcode puis essayer de pointer dessus
+//le -11 segfault: on touche a ebp sauvegarder. il suffit de modifier l'ebp pour
+//avoir une stack personnalisee
+//read -9: adresse de la ou on ecris.
