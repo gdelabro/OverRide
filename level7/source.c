@@ -44,7 +44,31 @@ int read_number(unsigned int *addr) {
 	return (0);
 }
 
-//on peut tenter decrire numero par numero du shellcode puis essayer de pointer dessus
+//peut etre mettre le shellcode dans les arg ou dans le storage
+//
+//
+//
 //le -11 segfault: on touche a ebp sauvegarder. il suffit de modifier l'ebp pour
 //avoir une stack personnalisee
 //read -9: adresse de la ou on ecris.
+//
+//
+//
+//
+//in -11 => store *(read -9) + 4*4 ----------------------------------------
+//                                                                         |
+//                                                                         |
+//                                                                         |
+//                                                                         |
+//0                                                                        |
+//+1   -> new esp   ==       *(read -9) + 1*4             && pop ebx       |
+//+2   -> pop esi               ^                                          |
+// 3   -> pop edi               | lea    -0xc(%ebp),%esp   <----------------
+//+4   -> new ebp   ==       *(read -9) + 4*4             && pop ebp
+//+5   -> pop eip   => store *(shellcode)
+// 6
+//+7
+//+8
+// 9
+//+10
+//+11
