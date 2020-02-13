@@ -1,3 +1,6 @@
+#include <libc.h>
+#include <sys/ptrace.h>
+
 int		main(void)
 {
 	int		pid = fork();                                       // esp+0xac
@@ -15,7 +18,7 @@ int		main(void)
 	}
 	else
 	{
-		while (true) {
+		while (1) {
 			wait(&stat_loc);
 			if ((stat_loc & 0x7f) != 0) {
 				if (WIFEXITED(stat_loc) > 0) {

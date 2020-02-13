@@ -1,12 +1,12 @@
-#include <stdio.h>
+#include <libc.h>
 int main(void)
 {
 	int valeur;
 	puts("***********************************");
 	puts("*         -Level00 -       *");
 	puts("***********************************");
-	printf("Password:", );
-	scanf("%d", valeur);
+	printf("Password:");
+	scanf("%d", &valeur);
 	if (valeur == 5276)
 	{
 		system("/bin/sh");

@@ -14,16 +14,7 @@ int store_number(int *addr) {
 	int nb = get_unum(); //-0x10
 	printf(" Index: ");
 	int index = get_unum();//-0xc
-	int ecx = index;
-	int edx = 0xaaaaaaab;
-	int eax = index;
-	eax *= 0xaaaaaaab;
-	edx = (ecx * 0xaaaaaaab) >> 32;
-	edx >>= 1;
-	eax = edx * 3;
-	edx = index;
-	edx -= eax;
-	if ((index != ((index * 0xaaaaaaab) >> 0x1)*3)
+	if ((index % 3 != 0)
 		&& (nb >> 0x18 != 0xb7))
 	{
 		addr[index] = nb;

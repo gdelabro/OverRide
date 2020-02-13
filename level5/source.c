@@ -1,3 +1,5 @@
+#include <libc.h>
+
 int main ()
 {
 	char str[144];
@@ -15,7 +17,7 @@ int main ()
 				}
 			}
 			a++;
-		}
+		} while (1);
 		printf(str);
-		exit();
+		exit(0);
 }

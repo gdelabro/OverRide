@@ -1,0 +1,32 @@
+Ce programme demande un login et un numero de serie. En regardant le code decompile
+on remarque qu'il n'y a pas de login specifique ni de numero de serie specifique,
+il faut simplement faire "matcher" les deux et rentrer un numero de serie qui
+correspond au login rentre. Premiere chose, il faut un login de taille plus
+grande que 5 et constitue seuelement de charactere ecrivable(lettres, chiffres etc).
+Ensuite, on s'attend a ce que la fonction auth nous renvoie 0 ce qui nous
+donnerait acces a un shell. Le seul endroit qui fait un return 0 est dans un if
+qui compare notre numero de serie avec une variable generer a partir de notre
+login. On va donc tout simplement regarder grace a gdb le numero de serie qui
+doit etre rentre avec notre login. Pour ce faire, nous devons deja bypass la
+protection anti debugger avec un simple breakpoint+changement de valeur de registre.
+Une fois cette protection passe, il faut mettre un bp sur l'adresse qui compare
+le numero de serie pour voir a quoi il le compare et bingo cest termine, il
+suffit de rentrer notre login et serial correspondant hors gdb pour obtenir notre shell.
+
+
+exploit:
+
+dans gdb
+	b *0x080487ba
+	b *0x08048866
+	run
+	Enter Login: gdelabro
+	Enter serial: 1
+	set $eax=1
+	continue
+	x/d $ebp-16   ->      our serial number for this login
+	serial: 6234473
+
+Enter Login: gdelabro
+Enter Serial: 6234473
+
