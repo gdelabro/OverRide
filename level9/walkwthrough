@@ -1,10 +1,21 @@
-Pour l'instant on va faire remplir le name qui va depasser sur la taille du message
-de charactere -1, ce qui va permettre de ne pas arreter decrire au 128eme
-charactere le message, et ce qui va donc nous permettre de faire un overflow lors
-du remplissage du message.
+Cet exercice va simplement remplir une structure, d'un username et d'un message
+, cependant, une erreur a ete commise dans le code. On se rend compte que le
+username dans la structure fait une taille de 40 et derriere lui se trouve la taille
+naximum du message(qui est 128) mais dans le code, la variable d'indentation
+est compare de la maniere suivante:   i <= 40   ce qui laisse passe i == 40
+autrement dit le 41eme charactere. Le 41eme charactere du username est donc
+la taille du message max et on va donc augmenter cette taille a -1 pour la rendre
+"illimite", et on peut donc maintenant remplir autant que l'on veut le message.
+Ensuite en rentrant beaucoup de charactere (200 pour etre exact), on se rend
+compte que le programme segfault. On touche effectivement au rip de la fonction
+handle_msg qui a cree la structure. Du coup on va vouloir remplacer le rip
+sauvegarde par la fonction appelle secret_backdoor qui nous lance un shell.
+Pour trouver son adresse lors de l'execution du programme, il suffit de lancer
+le programme avec gdb, de faire un ctrl-c pendant que le programme tourne et
+ensuite faire un disass secret_backdoor et recuperer l'adresse.
+du coup la construction de notre payload va se faire tout simplement de la sorte:
 
-python -c 'print "\xff"*41 + "\n" + "A"*192 + "\x90\xe5\xff\xff\xff\x7f\x00\x00" + "\x8c\x48\x55\x55\x55\x55\x00\x00"'
+(python -c 'print "\xff"*41 + "\n" + "A"*200 + "\x8c\x48\x55\x55\x55\x55\x00\x00"' ; cat) | ./level09
 
-probleme: des charactere sont \x00 et arrete donc lecriture
-du coup on va basculer rbp sur une stack perso: l'environnement comme ca, tout ce dont
-on a besoin pourra etre ecrit facilement
+Il nous suffit maintenant de faire un cat sur /home/users/end/.pass pour terminer
+le projet.
