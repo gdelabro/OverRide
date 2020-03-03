@@ -1,46 +1,53 @@
 #include <libc.h>
-#include <nop>
+
+typedef struct s_msg
+{
+	char	msg[140];
+	char	user[40]; //8c
+	int		size_msg; //b4
+} t_msg;
 
 int secret_backdoor()
 {
-	char	str[0x81]
-	fgets(str, 0x80, stdin);
+	char	str[128];
+	fgets(str, 128, stdin);
 	return (system(str));
 }
 
-int set_msg(char *arg0) {
-	asm { rep stosq  qword [rdi], rax };
+void set_msg(t_msg *msg) {
+	char	msg2[1024];
+
+	memset(msg2, 0, 1024);
 	puts(">: Msg @Unix-Dude");
-	printf(0xbdf);
-	fgets(&var_400, 0x400, **qword_201fb8);
-	return (strncpy(arg0, &var_400, *(arg0 + 0xb4)));
+	printf(">>: ");
+	fgets(msg2, 1024, stdin);
+	strncpy(msg->msg, msg2, msg->size_msg);
 }
 
-int set_username(int arg0) {
-	var_98 = arg0;
-	asm { rep stosq  qword [rdi], rax };
+void set_username(t_msg *msg) {
+	char	buf[128];
+
+	memset(buf, 0, 128);
 	puts(">: Enter your username");
-	printf(0xbdf);
-	fgets(&var_90, 0x80, **qword_201fb8);
-	for (var_4 = 0x0; var_4 <= 0x28; var_4 = var_4 + 0x1) {
-		if ((*(int8_t *)(rbp + (sign_extend_32(var_4) - 0x90)) & 0xff) == 0x0) {
+	printf(">>: ");
+	fgets(buf, 128, stdin);
+
+	for (int i; i <= 40; i++) {
+		if (!buf[i])
 			break;
-		}
-		*(int8_t *)(var_98 + sign_extend_32(var_4) + 0x8c) = *(int8_t *)(rbp + (sign_extend_32(var_4) - 0x90)) & 0xff;
+		msg->user[i] = buf[i];
 	}
-	rax = printf(">: Welcome, %s", var_98 + 0x8c);
-	return rax;
+	printf(">: Welcome, %s", msg->user);
 }
 
 int handle_msg()
 {
-	*(&var_C0 + 0x8c) = 0x0;
-	*(&var_C0 + 0x94) = 0x0;
-	*(&var_C0 + 0x9c) = 0x0;
-	*(&var_C0 + 0xa4) = 0x0;
-	*(&var_C0 + 0xac) = 0x0;
-	set_username(&var_C0);
-	set_msg(&var_C0);
+	t_msg msg;
+
+	memset(msg.user, 0, 40);
+	msg.size_msg = 140;
+	set_username(&msg);
+	set_msg(&msg);
 	return (puts(">: Msg sent!"));
 }
 
@@ -50,3 +57,12 @@ int main()
 	handle_msg();
 	return (0);
 }
+
+/*
+b *0x000055555555495b
+b *0x00005555555549c3
+recuperer rdi    ->       0x7fffffffe0b0
+continue
+>>enter msg
+x/s 0x7fffffffe0b0
+*/

